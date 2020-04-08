@@ -1,0 +1,196 @@
+import sys
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLineEdit
+from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import pyqtSlot
+import RPi.GPIO as GPIO
+import time
+
+# Hardware setup
+led = 18
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+GPIO.setup(led, GPIO.OUT)
+
+def Display(char):
+    if char == 'a':
+        dot()
+        dash()
+    elif char == 'b':
+        dash()
+        dot()
+        dot()
+        dot()
+    elif char == 'c':
+        dash()
+        dot()
+        dash()
+        dot()
+    elif char == 'd':
+        dash()
+        dot()
+        dot()
+    elif char == 'e':
+        dot()
+    elif char == 'f':
+        dot()
+        dot()
+        dash()
+        dot()
+    elif char == 'g':
+        dash()
+        dash()
+        dot()
+    elif char == 'h':
+        dot()
+        dot()
+        dot()
+        dot()
+    elif char == 'i':
+        dot()
+        dot()
+    elif char == 'j':
+        dot()
+        dash()
+        dash()
+        dash()
+    elif char == 'k':
+        dash()
+        dot()
+        dash()
+    elif char == 'l':
+        dot()
+        dash()
+        dot()
+        dot()
+    elif char == 'm':
+        dash()
+        dash()
+    elif char == 'n':
+        dash()
+        dot()
+    elif char == 'o':
+        dash()
+        dash()
+        dash()
+    elif char == 'p':
+        dot()
+        dash()
+        dash()
+        dot()
+    elif char == 'r':
+        dot()
+        dash()
+        dot()
+    elif char == 's':
+        dot()
+        dot()
+        dot()
+    elif char == 't':
+        dash()
+    elif char == 'u':
+        dot()
+        dot()
+        dash()
+    elif char == 'v':
+        dot()
+        dot()
+        dot()
+        dash()
+    elif char == 'w':
+        dot()
+        dash()
+        dash()
+    elif char == 'x':
+        dash()
+        dot()
+        dot()
+        dash()
+    elif char == 'y':
+        dash()
+        dot()
+        dash()
+        dash()
+    elif char == 'z':
+        dash()
+        dash()
+        dot()
+        dot()
+    elif char == ' ':
+        space()
+    else:
+        print("'"+ char + "'" + " Invalid character!")
+
+def dot():
+    GPIO.output(led, GPIO.LOW)
+    time.sleep(0.25)
+    GPIO.output(led, GPIO.HIGH)
+    time.sleep(0.5)
+    GPIO.output(led, GPIO.LOW)
+    time.sleep(0.25)
+
+def dash():
+    GPIO.output(led, GPIO.HIGH)
+    time.sleep(1)
+    GPIO.output(led, GPIO.LOW)
+    time.sleep(0.1)
+    
+def space():
+    GPIO.output(led, GPIO.LOW)
+    time.sleep(1)
+    
+def gpioClear():
+    GPIO.cleanup()
+
+class App(QWidget):
+
+    def __init__(self):
+        super().__init__()
+        self.title = '5.3C RPi - Morse Code using GUI'
+        self.x = 800
+        self.y = 500
+        self.width = 400
+        self.height = 150
+        self.initUI()
+        
+    def initUI(self):
+        self.setWindowTitle(self.title)
+        self.setGeometry(self.x, self.y, self.width, self.height)
+        
+        # Create textbox
+        self.textbox = QLineEdit(self)
+        self.textbox.setMaxLength(12)
+        self.textbox.move(20,20)
+        self.textbox.resize(365,40)
+        
+        # Create 'start' button
+        buttonStart = QPushButton('Start', self)
+        buttonStart.move(20,80)
+        buttonStart.clicked.connect(self.start_click)
+        
+        # Create 'Exit' button
+        buttonExit = QPushButton('Exit', self)
+        buttonExit.move(300,80)
+        buttonExit.clicked.connect(self.exit_click)
+        
+        self.show()
+    
+    
+    @pyqtSlot()
+    def start_click(self):
+        textboxString = self.textbox.text()
+        textboxString.lower()
+        for i in textboxString:
+            print(i)
+            Display(i)
+            space()
+    
+    def exit_click(self):
+        GPIO.output(led, GPIO.LOW)
+        print("Exiting GUI . . . ")
+        gpioClear()
+        self.close()
+    
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    ex = App()
+    sys.exit(app.exec_())
